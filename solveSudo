@@ -1,0 +1,101 @@
+#include "stdafx.h"
+#include <iostream>
+#include <vector>
+#include <string> 
+
+using namespace std;
+
+void fill(int r, int c, int val);
+bool isValid(int r, int c, int val);
+bool solve(vector<vector<char>>& board, int index);
+void solveSudo(vector<vector<char>>& board);
+
+int col[9][10];
+int row[9][10];
+int sub[9][10];
+
+int main(void)
+{
+	vector<char> vc;
+	vector<vector<char>> vvc;
+	//string a[9] = {".87654321","2........","3........","4........","5........","6........","7........","8........","9........"};
+	for(int i = 0; i < 9; i++)
+	{
+		cin >> a[i];
+	}
+	for(int i = 0; i < 9; i++)
+	{
+		for(int j = 0; j < 9; j++)
+		{
+			vc.push_back(a[i][j]);
+		}
+		vvc.push_back(vc);
+		vc.clear();
+	}
+	for(int i = 0; i < 9; i++)
+	{
+		for(int j = 0; j < 9; j++)
+		{
+			solveSudo(vvc);
+			cout << vvc[i][j] << " ";
+		}
+	    cout<< endl;
+	}
+
+	return 0;
+}
+
+bool isValid(int r, int c, int val) {
+	if(row[r][val] == 0 && col[c][val]== 0 && sub[(r/3)*3 + c/3][val] == 0) 
+		return true;
+    return false;
+}
+
+void fill(int r, int c, int val)
+{
+	row[r][val] = 1;
+	col[c][val] = 1;
+	sub[(r/3)*3 + c/3][val] = 1;
+}
+
+void clear(int r, int c, int val)
+{
+	row[r][val] = 0;
+	col[c][val] = 0;
+	sub[(r/3)*3 + c/3][val] = 0;
+}
+bool solve(vector<vector<char>>& board, int index)
+{
+	if(index > 80) return true;
+	int r = index/9;
+	int c = index%9;
+	if(board[r][c] != '.') return solve(board, index + 1);
+	for(char ch = '1'; ch <= '9'; ch++)
+	{
+		int tmp = ch - '0';
+		if(isValid(r, c, tmp))
+		{
+			fill(r, c, tmp);
+			board[r][c] = ch;
+			if(solve(board, index + 1)) return true;
+		    clear(r, c, tmp);
+		}
+	}
+
+	board[r][c] = '.';
+	return false;
+}
+
+void solveSudo(vector<vector<char>>& board)
+{
+	for(int i = 0; i < 9; i++)
+		for(int j = 0; j < 9; j++)
+		{
+			if(board[i][j] != '.')
+			{
+				int a = board[i][j] - '0';
+				fill(i, j, a);
+			}
+		}
+	solve(board, 0);
+}
